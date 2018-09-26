@@ -24,7 +24,8 @@ import javax.persistence.criteria.*;
 import javax.persistence.metamodel.EntityType;
 import java.util.List;
 
-@Stateless
+//@Stateless
+@Repository
 public class MoviesBean {
 
     @PersistenceContext(unitName = "movie-unit")

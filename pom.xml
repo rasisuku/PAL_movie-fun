@@ -29,10 +29,13 @@
     </properties>
 
     <repositories>
+
         <repository>
-            <id>apache-m2-snapshot</id>
-            <name>Apache Snapshot Repository</name>
-            <url>https://repository.apache.org/content/groups/snapshots</url>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
     </repositories>
 
@@ -41,13 +44,39 @@
         <defaultGoal>package</defaultGoal>
     </build>
 
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.4.2.RELEASE</version>
+    </parent>
+
+    <build>
+        <finalName>moviefun</finalName>
+        <defaultGoal>package</defaultGoal>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+
     <dependencies>
+
+
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+
+        <!--<dependency>
             <groupId>org.apache.tomee</groupId>
             <artifactId>javaee-api</artifactId>
             <version>7.0</version>
             <scope>provided</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
@@ -70,11 +99,11 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
             <version>4.3.4.RELEASE</version>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
     </dependencies>
 </project>
