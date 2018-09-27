@@ -1,6 +1,11 @@
 package org.superbiz.moviefun;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.superbiz.moviefun.albums.Album;
 import org.superbiz.moviefun.albums.AlbumFixtures;
@@ -18,8 +23,12 @@ public class HomeController {
     private final AlbumsBean albumsBean;
     private final MovieFixtures movieFixtures;
     private final AlbumFixtures albumFixtures;
+    private final PlatformTransactionManager albumsTransactionManager;
+    private final PlatformTransactionManager moviesTransactionManager;
 
-    public HomeController(MoviesBean moviesBean, AlbumsBean albumsBean, MovieFixtures movieFixtures, AlbumFixtures albumFixtures) {
+    public HomeController(PlatformTransactionManager albumsTransactionManager,PlatformTransactionManager moviesTransactionManager, MoviesBean moviesBean, AlbumsBean albumsBean, MovieFixtures movieFixtures, AlbumFixtures albumFixtures) {
+        this.albumsTransactionManager = albumsTransactionManager;
+        this.moviesTransactionManager=moviesTransactionManager;
         this.moviesBean = moviesBean;
         this.albumsBean = albumsBean;
         this.movieFixtures = movieFixtures;
@@ -33,17 +42,35 @@ public class HomeController {
 
     @GetMapping("/setup")
     public String setup(Map<String, Object> model) {
-        for (Movie movie : movieFixtures.load()) {
-            moviesBean.addMovie(movie);
-        }
 
-        for (Album album : albumFixtures.load()) {
-            albumsBean.addAlbum(album);
-        }
+        AddAlbums();
+        AddMovies();
 
         model.put("movies", moviesBean.getMovies());
         model.put("albums", albumsBean.getAlbums());
 
         return "setup";
+    }
+
+    private void AddMovies()
+    {
+        TransactionDefinition def = new DefaultTransactionDefinition();
+        TransactionStatus status = moviesTransactionManager.getTransaction(def);
+
+        for (Movie movie : movieFixtures.load()) {
+            moviesBean.addMovie(movie);
+        }
+        moviesTransactionManager.commit(status);
+    }
+
+    private void AddAlbums()
+    {
+        TransactionDefinition def = new DefaultTransactionDefinition();
+        TransactionStatus status = albumsTransactionManager.getTransaction(def);
+
+        for (Album album : albumFixtures.load()) {
+            albumsBean.addAlbum(album);
+        }
+        albumsTransactionManager.commit(status);
     }
 }
